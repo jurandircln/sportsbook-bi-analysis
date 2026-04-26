@@ -1,7 +1,7 @@
 # ADR-002: Modelagem Inicial do Banco de Dados
 
 **Data:** 2026-04-26
-**Status:** Aceita
+**Status:** Aceita (seção Silver parcialmente substituída por ADR-006)
 
 ## Contexto
 

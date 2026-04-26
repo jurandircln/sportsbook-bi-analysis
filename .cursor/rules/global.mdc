@@ -1,0 +1,24 @@
+# Regras Globais do Projeto
+
+Você está no projeto **Sportsbook BI Analysis**.
+
+## Antes de qualquer implementação
+
+1. Leia o `CLAUDE.md` na raiz do repositório
+2. Consulte a camada de contexto relevante em `docs/`
+3. Verifique se existe skill aplicável em `.claude/skills/`
+
+## Regras de código
+
+- Todos os comentários em **português**
+- snake_case para arquivos, funções e variáveis
+- PascalCase para classes
+- UPPER_SNAKE_CASE para constantes
+
+## Arquitetura
+
+- Dados fluem: Bronze → Silver → Gold
+- Nunca leia da Bronze no dashboard — use sempre a Gold
+- Regras de negócio vivem na Silver, não na aplicação
+- Toda decisão técnica relevante → criar ADR (skill: `create-adr`)
+- Toda mudança de schema → atualizar catálogo (skill: `update-data-catalog`)

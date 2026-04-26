@@ -24,6 +24,13 @@ Use esta skill ao criar ou evoluir qualquer tabela, schema ou índice no banco d
 - [ ] Atualizar `docker/init.sql` com o novo DDL
 - [ ] Atualizar o catálogo de dados (invocar skill `update-data-catalog`)
 - [ ] Se a decisão for nova ou divergir do padrão, criar ADR (invocar skill `create-adr`)
+- [ ] Em tabelas Silver, identificar se a tabela é FATO ou DIMENSÃO (Star Schema — ADR-006)
+- [ ] Tabelas fato: nomenclatura silver.fact_<nome>, incluir medidas e FKs para dimensões
+- [ ] Tabelas dimensão: nomenclatura silver.dim_<nome>
+      - Usar chave natural (INTEGER) quando o ID original é estável
+      - Usar surrogate key (SERIAL) quando o valor original é texto livre
+- [ ] dim_date: não duplicar — verificar se o período já está coberto antes de recriar
+- [ ] FKs em fact_*: criar índices em todas as colunas de FK
 
 ## Padrão de nomenclatura SQL
 
@@ -71,4 +78,50 @@ CREATE TABLE IF NOT EXISTS gold.<nome> (
     ...
     updated_at   TIMESTAMP DEFAULT NOW()
 );
+```
+
+## Template de DDL Silver — Tabela Fato
+
+```sql
+-- Tabela Fato Silver: <descrição>
+-- Grão: <uma linha por X>
+-- Regras de negócio aplicadas: <listar>
+-- Fonte: bronze.<origem>
+CREATE TABLE IF NOT EXISTS silver.fact_<nome> (
+    <id>            TEXT          PRIMARY KEY,
+    <dim_fk>_id     INTEGER       NOT NULL,    -- FK → silver.dim_<nome>
+    <medida>        NUMERIC(12,2) NOT NULL,
+    <dim_degenera>  VARCHAR(N),               -- dimensão degenerada (sem tabela própria)
+    ingested_at     TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_silver_fact_<nome>_<dim>
+    ON silver.fact_<nome> (<dim_fk>_id);
+```
+
+## Template de DDL Silver — Dimensão com Chave Natural
+
+```sql
+-- Tabela Dimensão Silver: <descrição>
+-- Chave natural: <id> (INTEGER estável)
+-- Fonte: bronze.<origem>
+CREATE TABLE IF NOT EXISTS silver.dim_<nome> (
+    <natural_id>  INTEGER     PRIMARY KEY,
+    <atributo_1>  VARCHAR(N),
+    ingested_at   TIMESTAMP DEFAULT NOW()
+);
+```
+
+## Template de DDL Silver — Dimensão com Surrogate Key
+
+```sql
+-- Tabela Dimensão Silver: <descrição>
+-- Surrogate key (SERIAL): valor original é texto livre sem unicidade estável.
+-- Fonte: bronze.<origem>
+CREATE TABLE IF NOT EXISTS silver.dim_<nome> (
+    <surrogate_id>  SERIAL      PRIMARY KEY,
+    <atributo_1>    VARCHAR(N)  NOT NULL,
+    ingested_at     TIMESTAMP DEFAULT NOW()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_silver_dim_<nome>_unique
+    ON silver.dim_<nome> (<atributo_1>);
 ```

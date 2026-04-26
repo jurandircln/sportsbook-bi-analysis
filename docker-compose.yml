@@ -1,0 +1,46 @@
+# Serviços do projeto Sportsbook BI Analysis
+# Uso: docker compose up -d
+services:
+
+  # Banco de dados PostgreSQL com arquitetura medalhão (bronze, silver, gold)
+  postgres:
+    image: postgres:16
+    container_name: sportsbook_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # Persistência dos dados entre reinicializações
+      - postgres_data:/var/lib/postgresql/data
+      # Script de inicialização: cria schemas e tabelas
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Dados raw disponíveis dentro do container para ingestão
+      - ./data/raw:/data/raw
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Aplicação: dashboard Streamlit + agente Agno
+  app:
+    build: .
+    container_name: sportsbook_app
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      # Hot reload do código durante desenvolvimento
+      - ./src:/app/src
+      - ./data:/app/data
+    ports:
+      - "8501:8501"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

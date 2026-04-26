@@ -1,0 +1,45 @@
+# Variáveis de ambiente
+.env
+
+# Dados brutos (não versionar CSVs)
+data/raw/*.csv
+data/raw/*.CSV
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.venv/
+venv/
+.uv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv
+uv.lock
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+.docker/
+
+# Logs
+*.log
+logs/
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/

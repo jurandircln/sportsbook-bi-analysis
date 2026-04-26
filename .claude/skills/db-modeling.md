@@ -37,7 +37,7 @@ Use esta skill ao criar ou evoluir qualquer tabela, schema ou índice no banco d
 - Schemas: `bronze`, `silver`, `gold`
 - Tabelas: `snake_case` (ex: `customer_crm_level`)
 - Colunas: `snake_case` (ex: `gross_revenue`)
-- Índices: `idx_<schema>_<tabela>_<coluna>` (ex: `idx_silver_sportsbook_customer`)
+- Índices: `idx_<schema>_<tabela>_<coluna>` (ex: `idx_silver_fact_bets_customer`)
 - PKs: declaradas inline na coluna quando simples, ou como constraint quando composta
 
 ## Template de DDL Bronze
@@ -55,17 +55,8 @@ CREATE TABLE IF NOT EXISTS bronze.<nome> (
 
 ## Template de DDL Silver
 
-```sql
--- Tabela Silver: <descrição>
--- Regras de negócio aplicadas: <listar regras>
--- Fonte: bronze.<tabela_origem>
-CREATE TABLE IF NOT EXISTS silver.<nome> (
-    <id>         INTEGER PRIMARY KEY,
-    <coluna_2>   <TIPO> NOT NULL,
-    ...
-    ingested_at  TIMESTAMP DEFAULT NOW()
-);
-```
+> ⚠️ **Obsoleto após ADR-006.** Use os templates de Tabela Fato ou Dimensão abaixo.
+> Não criar tabelas Silver sem prefixo `fact_` ou `dim_`.
 
 ## Template de DDL Gold
 

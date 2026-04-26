@@ -73,6 +73,7 @@ Arquitetura **Medalhão** com 3 schemas no PostgreSQL:
 | ADR-003 | Design do Agente Agno — Abordagem Híbrida | Aceita |
 | ADR-004 | Stack e Ferramentas | Aceita |
 | ADR-005 | Catálogo de Dados como Artefato de Governança | Aceita |
+| ADR-006 | Adoção de Star Schema na Camada Silver | Aceita |
 
 Localização: `docs/technical-context/adr/`
 

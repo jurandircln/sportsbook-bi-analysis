@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from src.db import get_engine
+from src.dashboard.filters import filter_by_month_range, filter_by_values
 
 st.set_page_config(
     page_title="Sportsbook BI — Futebol Romeno 2018/19",
@@ -57,10 +58,10 @@ def load_cashout_analysis():
 
 
 @st.cache_data(ttl=300)
-def load_top_customers(n: int = 20):
+def load_customers_for_filter():
     engine = get_db_engine()
     return pd.read_sql(
-        f"""SELECT cp.customer_id, cp.gender, cp.age, cp.total_bets,
+        """SELECT cp.customer_id, cp.gender, cp.age, cp.total_bets,
                    cp.total_turnover, cp.gross_revenue, cp.live_bets,
                    ROUND(cp.live_bets::NUMERIC / NULLIF(cp.total_bets, 0) * 100, 1) AS live_pct,
                    cs.segment, cs.crm_level, bp.preferred_channel
@@ -68,8 +69,7 @@ def load_top_customers(n: int = 20):
             LEFT JOIN gold.customer_segments cs ON cs.customer_id = cp.customer_id
             LEFT JOIN gold.betting_preferences bp ON bp.customer_id = cp.customer_id
             WHERE cp.total_bets > 0
-            ORDER BY cp.gross_revenue DESC
-            LIMIT {n}""",
+            ORDER BY cp.gross_revenue DESC""",
         engine,
     )
 
@@ -104,11 +104,32 @@ tab_season, tab_crm, tab_cashout, tab_customers, tab_agent = st.tabs(
 
 # ── Tab 1: Resumo da Temporada ─────────────────────────────────────────────────
 with tab_season:
+    st.info(
+        "Visão mensal da temporada Set/2018–Ago/2019: receita bruta, volume de apostas, "
+        "evolução da base de clientes e participação de apostas ao vivo. "
+        "Use o filtro de período para recortar os meses de interesse."
+    )
+
+    # Filtro de período
+    min_date = summary["month"].min().date()
+    max_date = summary["month"].max().date()
+    date_range = st.date_input(
+        "Período",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key="season_date_range",
+    )
+    if isinstance(date_range, tuple) and len(date_range) == 2:
+        summary_f = filter_by_month_range(summary, "month", date_range[0], date_range[1])
+    else:
+        summary_f = summary
+
     col_left, col_right = st.columns(2)
 
     with col_left:
         fig_gr = px.bar(
-            summary,
+            summary_f,
             x="month",
             y="gross_revenue",
             title="Gross Revenue Mensal",
@@ -120,7 +141,7 @@ with tab_season:
 
     with col_right:
         fig_bets = px.line(
-            summary,
+            summary_f,
             x="month",
             y="total_bets",
             title="Volume de Apostas por Mês",
@@ -131,7 +152,7 @@ with tab_season:
         st.plotly_chart(fig_bets, use_container_width=True)
 
     fig_customers = px.area(
-        summary,
+        summary_f,
         x="month",
         y=["total_customers", "new_customers"],
         title="Clientes Ativos e Novos por Mês",
@@ -145,7 +166,7 @@ with tab_season:
     st.plotly_chart(fig_customers, use_container_width=True)
 
     fig_live = px.line(
-        summary,
+        summary_f,
         x="month",
         y="live_bet_pct",
         title="% Apostas Live por Mês",
@@ -158,14 +179,30 @@ with tab_season:
 
 # ── Tab 2: Performance CRM ─────────────────────────────────────────────────────
 with tab_crm:
+    st.info(
+        "Comparativo de performance entre os níveis do programa CRM: receita, apostas e valor médio por cliente. "
+        "A distribuição de segmentos reflete o período completo da temporada — todos os clientes são classificados "
+        "como \"novo\" porque o dataset disponível não contém histórico anterior a Set/2018. "
+        "Use o filtro de nível CRM para isolar grupos específicos."
+    )
     crm = load_crm_performance()
     segments = load_customer_segments()
+
+    # Filtro de nível CRM
+    crm_levels = sorted(crm["crm_level"].dropna().unique().tolist())
+    selected_crm = st.multiselect(
+        "Nível CRM",
+        options=crm_levels,
+        default=crm_levels,
+        key="crm_level_filter",
+    )
+    crm_f = filter_by_values(crm, "crm_level", selected_crm)
 
     col_crm, col_seg = st.columns(2)
 
     with col_crm:
         fig_crm_gr = px.bar(
-            crm,
+            crm_f,
             x="crm_level",
             y="gross_revenue",
             color="crm_level",
@@ -185,7 +222,7 @@ with tab_crm:
         st.plotly_chart(fig_seg, use_container_width=True)
 
     st.subheader("Métricas por Nível CRM")
-    crm_display = crm.copy()
+    crm_display = crm_f.copy()
     crm_display["gross_revenue"] = crm_display["gross_revenue"].apply(fmt_brl)
     crm_display["total_turnover"] = crm_display["total_turnover"].apply(fmt_brl)
     crm_display["avg_gross_revenue_per_customer"] = crm_display["avg_gross_revenue_per_customer"].apply(fmt_brl)
@@ -198,13 +235,32 @@ with tab_crm:
 
 # ── Tab 3: Cashouts ────────────────────────────────────────────────────────────
 with tab_cashout:
+    st.info(
+        "Análise mensal das tentativas de cash out: volume (sucesso vs. falha), "
+        "taxa de sucesso e valor total resgatado. "
+        "Use o filtro de período para focar em meses específicos."
+    )
     cashouts = load_cashout_analysis()
+
+    min_date_co = cashouts["month"].min().date()
+    max_date_co = cashouts["month"].max().date()
+    date_range_co = st.date_input(
+        "Período",
+        value=(min_date_co, max_date_co),
+        min_value=min_date_co,
+        max_value=max_date_co,
+        key="cashout_date_range",
+    )
+    if isinstance(date_range_co, tuple) and len(date_range_co) == 2:
+        cashouts_f = filter_by_month_range(cashouts, "month", date_range_co[0], date_range_co[1])
+    else:
+        cashouts_f = cashouts
 
     col_c1, col_c2 = st.columns(2)
 
     with col_c1:
         fig_co_vol = px.bar(
-            cashouts,
+            cashouts_f,
             x="month",
             y=["successful_attempts", "failed_attempts"],
             barmode="stack",
@@ -220,7 +276,7 @@ with tab_cashout:
 
     with col_c2:
         fig_co_rate = px.line(
-            cashouts,
+            cashouts_f,
             x="month",
             y="success_rate",
             title="Taxa de Sucesso de Cashout (%)",
@@ -231,7 +287,7 @@ with tab_cashout:
         st.plotly_chart(fig_co_rate, use_container_width=True)
 
     fig_co_amount = px.bar(
-        cashouts,
+        cashouts_f,
         x="month",
         y="total_cashout_amount",
         title="Valor Total de Cashouts Realizados",
@@ -244,8 +300,37 @@ with tab_cashout:
 
 # ── Tab 4: Top Clientes ────────────────────────────────────────────────────────
 with tab_customers:
-    n_customers = st.slider("Número de clientes", min_value=10, max_value=100, value=20, step=10)
-    top = load_top_customers(n_customers)
+    st.info(
+        "Ranking dos clientes com maior receita bruta gerada na temporada. "
+        "Combine os filtros de segmento e gênero com o seletor de quantidade "
+        "para criar cortes customizados da base."
+    )
+    all_customers = load_customers_for_filter()
+
+    segments_opts = sorted(all_customers["segment"].dropna().unique().tolist())
+    genders_opts = sorted(all_customers["gender"].dropna().unique().tolist())
+
+    col_f1, col_f2, col_f3 = st.columns([2, 2, 3])
+    with col_f1:
+        selected_segments = st.multiselect(
+            "Segmento",
+            options=segments_opts,
+            default=segments_opts,
+            key="customer_segment_filter",
+        )
+    with col_f2:
+        selected_genders = st.multiselect(
+            "Gênero",
+            options=genders_opts,
+            default=genders_opts,
+            key="customer_gender_filter",
+        )
+    with col_f3:
+        n_customers = st.slider("Número de clientes", min_value=10, max_value=100, value=20, step=10)
+
+    top = filter_by_values(all_customers, "segment", selected_segments)
+    top = filter_by_values(top, "gender", selected_genders)
+    top = top.head(n_customers)
 
     fig_top = px.bar(
         top,

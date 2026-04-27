@@ -58,24 +58,6 @@ def load_cashout_analysis():
 
 
 @st.cache_data(ttl=300)
-def load_top_customers(n: int = 20):
-    engine = get_db_engine()
-    return pd.read_sql(
-        f"""SELECT cp.customer_id, cp.gender, cp.age, cp.total_bets,
-                   cp.total_turnover, cp.gross_revenue, cp.live_bets,
-                   ROUND(cp.live_bets::NUMERIC / NULLIF(cp.total_bets, 0) * 100, 1) AS live_pct,
-                   cs.segment, cs.crm_level, bp.preferred_channel
-            FROM gold.customer_performance cp
-            LEFT JOIN gold.customer_segments cs ON cs.customer_id = cp.customer_id
-            LEFT JOIN gold.betting_preferences bp ON bp.customer_id = cp.customer_id
-            WHERE cp.total_bets > 0
-            ORDER BY cp.gross_revenue DESC
-            LIMIT {n}""",
-        engine,
-    )
-
-
-@st.cache_data(ttl=300)
 def load_customers_for_filter():
     engine = get_db_engine()
     return pd.read_sql(

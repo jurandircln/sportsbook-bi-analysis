@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from src.db import get_engine
+from src.dashboard.filters import filter_by_month_range, filter_by_values
 
 st.set_page_config(
     page_title="Sportsbook BI — Futebol Romeno 2018/19",
@@ -104,6 +105,11 @@ tab_season, tab_crm, tab_cashout, tab_customers, tab_agent = st.tabs(
 
 # ── Tab 1: Resumo da Temporada ─────────────────────────────────────────────────
 with tab_season:
+    st.info(
+        "Visão mensal da temporada Set/2018–Ago/2019: receita bruta, volume de apostas, "
+        "evolução da base de clientes e participação de apostas ao vivo. "
+        "Use o filtro de período para recortar os meses de interesse."
+    )
     col_left, col_right = st.columns(2)
 
     with col_left:
@@ -158,6 +164,12 @@ with tab_season:
 
 # ── Tab 2: Performance CRM ─────────────────────────────────────────────────────
 with tab_crm:
+    st.info(
+        "Comparativo de performance entre os níveis do programa CRM: receita, apostas e valor médio por cliente. "
+        "A distribuição de segmentos reflete o período completo da temporada — todos os clientes são classificados "
+        "como \"novo\" porque o dataset disponível não contém histórico anterior a Set/2018. "
+        "Use o filtro de nível CRM para isolar grupos específicos."
+    )
     crm = load_crm_performance()
     segments = load_customer_segments()
 
@@ -198,6 +210,11 @@ with tab_crm:
 
 # ── Tab 3: Cashouts ────────────────────────────────────────────────────────────
 with tab_cashout:
+    st.info(
+        "Análise mensal das tentativas de cash out: volume (sucesso vs. falha), "
+        "taxa de sucesso e valor total resgatado. "
+        "Use o filtro de período para focar em meses específicos."
+    )
     cashouts = load_cashout_analysis()
 
     col_c1, col_c2 = st.columns(2)

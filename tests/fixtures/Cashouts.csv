@@ -1,0 +1,4 @@
+CashoutAttempt_Bet_ID,CashoutAttempt_Bet_Cashout_ID,CashoutAttempt_Bet_Cashout_Created,CashoutAttempt_Bet_Cashout_Status,CashoutAttempt_Cashout_Amount
+BET003,CO001,2018-10-20T16:00:00.000Z,Successful,12.50
+BET001,CO002,2018-09-15T20:00:00.000Z,Failed,
+BET005,CO003,2018-09-25T15:00:00.000Z,Successful,6.00

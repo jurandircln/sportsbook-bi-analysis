@@ -28,7 +28,7 @@ dev-dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ingestion", "src/transformation", "src/agent", "src/dashboard"]
+packages = ["src"]
 
 [build-system]
 requires = ["hatchling"]
@@ -39,3 +39,4 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["."]

@@ -1,0 +1,8 @@
+SportBetSettled_Bet_ID,BetType_Name,Market_Template_Name,SportBetSettled_Customer_ID,SportBetSettled_Settled,SportBetSettled_Placed,Channel_Name,SportBetSettled_Event_ID,Turnover,Winnings
+BET001,Single,Match Winner,1,2018-09-15T21:00:00.000Z,2018-09-15T17:30:00.000Z,Android,101,10.00,0.00
+BET002,Single,Match Winner,1,2018-09-15T21:00:00.000Z,2018-09-15T19:00:00.000Z,Android,101,5.00,15.00
+BET003,Single,Both Teams Score,2,2018-10-20T17:30:00.000Z,2018-10-20T14:00:00.000Z,iOS,102,20.00,0.00
+BET004,Accumulator,Match Winner,3,2019-03-10T22:30:00.000Z,2019-03-10T21:00:00.000Z,Web,103,15.00,30.00
+BET006,Single,Over/Under,5,2019-06-20T21:00:00.000Z,2019-06-20T10:00:00.000Z,iOS,,12.00,20.00
+BET007,Single,Match Winner,1,2018-04-15T21:00:00.000Z,2018-04-10T10:00:00.000Z,Android,,5.00,0.00
+BET008,Single,Match Winner,4,2018-07-20T21:00:00.000Z,2018-07-15T10:00:00.000Z,iOS,,8.00,0.00

@@ -15,7 +15,6 @@ RUN uv sync --no-dev
 
 # Copiar o código-fonte
 COPY src/ ./src/
-COPY data/ ./data/
 
 # Expor porta do Streamlit
 EXPOSE 8501

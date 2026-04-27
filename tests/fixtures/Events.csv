@@ -1,0 +1,4 @@
+Event_ID,Event_Sport_Name,Event_Class_Name,Event_Type_Name,Event_Name,Event_Start_Time,Event_End_Time
+101,Football,Romanian,Liga 1,CFR Cluj vs FCSB,2018-09-15T18:00:00.000Z,2018-09-15T20:00:00.000Z
+102,Football,Romanian,Liga 1,Dinamo vs Rapid,2018-10-20T15:00:00.000Z,2018-10-20T17:00:00.000Z
+103,Football,Romanian,Liga 1,Viitorul vs Craiova,2019-03-10T20:00:00.000Z,2019-03-10T22:00:00.000Z

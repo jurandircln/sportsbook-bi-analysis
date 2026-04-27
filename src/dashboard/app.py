@@ -233,11 +233,25 @@ with tab_cashout:
     )
     cashouts = load_cashout_analysis()
 
+    min_date_co = cashouts["month"].min().date()
+    max_date_co = cashouts["month"].max().date()
+    date_range_co = st.date_input(
+        "Período",
+        value=(min_date_co, max_date_co),
+        min_value=min_date_co,
+        max_value=max_date_co,
+        key="cashout_date_range",
+    )
+    if isinstance(date_range_co, tuple) and len(date_range_co) == 2:
+        cashouts_f = filter_by_month_range(cashouts, "month", date_range_co[0], date_range_co[1])
+    else:
+        cashouts_f = cashouts
+
     col_c1, col_c2 = st.columns(2)
 
     with col_c1:
         fig_co_vol = px.bar(
-            cashouts,
+            cashouts_f,
             x="month",
             y=["successful_attempts", "failed_attempts"],
             barmode="stack",
@@ -253,7 +267,7 @@ with tab_cashout:
 
     with col_c2:
         fig_co_rate = px.line(
-            cashouts,
+            cashouts_f,
             x="month",
             y="success_rate",
             title="Taxa de Sucesso de Cashout (%)",
@@ -264,7 +278,7 @@ with tab_cashout:
         st.plotly_chart(fig_co_rate, use_container_width=True)
 
     fig_co_amount = px.bar(
-        cashouts,
+        cashouts_f,
         x="month",
         y="total_cashout_amount",
         title="Valor Total de Cashouts Realizados",

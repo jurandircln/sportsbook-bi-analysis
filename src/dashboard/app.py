@@ -75,6 +75,23 @@ def load_top_customers(n: int = 20):
     )
 
 
+@st.cache_data(ttl=300)
+def load_customers_for_filter():
+    engine = get_db_engine()
+    return pd.read_sql(
+        """SELECT cp.customer_id, cp.gender, cp.age, cp.total_bets,
+                   cp.total_turnover, cp.gross_revenue, cp.live_bets,
+                   ROUND(cp.live_bets::NUMERIC / NULLIF(cp.total_bets, 0) * 100, 1) AS live_pct,
+                   cs.segment, cs.crm_level, bp.preferred_channel
+            FROM gold.customer_performance cp
+            LEFT JOIN gold.customer_segments cs ON cs.customer_id = cp.customer_id
+            LEFT JOIN gold.betting_preferences bp ON bp.customer_id = cp.customer_id
+            WHERE cp.total_bets > 0
+            ORDER BY cp.gross_revenue DESC""",
+        engine,
+    )
+
+
 def fmt_brl(val: float) -> str:
     return f"R$ {val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -301,8 +318,37 @@ with tab_cashout:
 
 # ── Tab 4: Top Clientes ────────────────────────────────────────────────────────
 with tab_customers:
-    n_customers = st.slider("Número de clientes", min_value=10, max_value=100, value=20, step=10)
-    top = load_top_customers(n_customers)
+    st.info(
+        "Ranking dos clientes com maior receita bruta gerada na temporada. "
+        "Combine os filtros de segmento e gênero com o seletor de quantidade "
+        "para criar cortes customizados da base."
+    )
+    all_customers = load_customers_for_filter()
+
+    segments_opts = sorted(all_customers["segment"].dropna().unique().tolist())
+    genders_opts = sorted(all_customers["gender"].dropna().unique().tolist())
+
+    col_f1, col_f2, col_f3 = st.columns([2, 2, 3])
+    with col_f1:
+        selected_segments = st.multiselect(
+            "Segmento",
+            options=segments_opts,
+            default=segments_opts,
+            key="customer_segment_filter",
+        )
+    with col_f2:
+        selected_genders = st.multiselect(
+            "Gênero",
+            options=genders_opts,
+            default=genders_opts,
+            key="customer_gender_filter",
+        )
+    with col_f3:
+        n_customers = st.slider("Número de clientes", min_value=10, max_value=100, value=20, step=10)
+
+    top = filter_by_values(all_customers, "segment", selected_segments)
+    top = filter_by_values(top, "gender", selected_genders)
+    top = top.head(n_customers)
 
     fig_top = px.bar(
         top,

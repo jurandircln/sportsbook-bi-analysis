@@ -189,11 +189,21 @@ with tab_crm:
     crm = load_crm_performance()
     segments = load_customer_segments()
 
+    # Filtro de nível CRM
+    crm_levels = sorted(crm["crm_level"].dropna().unique().tolist())
+    selected_crm = st.multiselect(
+        "Nível CRM",
+        options=crm_levels,
+        default=crm_levels,
+        key="crm_level_filter",
+    )
+    crm_f = filter_by_values(crm, "crm_level", selected_crm)
+
     col_crm, col_seg = st.columns(2)
 
     with col_crm:
         fig_crm_gr = px.bar(
-            crm,
+            crm_f,
             x="crm_level",
             y="gross_revenue",
             color="crm_level",
@@ -213,7 +223,7 @@ with tab_crm:
         st.plotly_chart(fig_seg, use_container_width=True)
 
     st.subheader("Métricas por Nível CRM")
-    crm_display = crm.copy()
+    crm_display = crm_f.copy()
     crm_display["gross_revenue"] = crm_display["gross_revenue"].apply(fmt_brl)
     crm_display["total_turnover"] = crm_display["total_turnover"].apply(fmt_brl)
     crm_display["avg_gross_revenue_per_customer"] = crm_display["avg_gross_revenue_per_customer"].apply(fmt_brl)

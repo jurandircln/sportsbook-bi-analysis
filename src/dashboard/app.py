@@ -110,11 +110,27 @@ with tab_season:
         "evolução da base de clientes e participação de apostas ao vivo. "
         "Use o filtro de período para recortar os meses de interesse."
     )
+
+    # Filtro de período
+    min_date = summary["month"].min().date()
+    max_date = summary["month"].max().date()
+    date_range = st.date_input(
+        "Período",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key="season_date_range",
+    )
+    if isinstance(date_range, tuple) and len(date_range) == 2:
+        summary_f = filter_by_month_range(summary, "month", date_range[0], date_range[1])
+    else:
+        summary_f = summary
+
     col_left, col_right = st.columns(2)
 
     with col_left:
         fig_gr = px.bar(
-            summary,
+            summary_f,
             x="month",
             y="gross_revenue",
             title="Gross Revenue Mensal",
@@ -126,7 +142,7 @@ with tab_season:
 
     with col_right:
         fig_bets = px.line(
-            summary,
+            summary_f,
             x="month",
             y="total_bets",
             title="Volume de Apostas por Mês",
@@ -137,7 +153,7 @@ with tab_season:
         st.plotly_chart(fig_bets, use_container_width=True)
 
     fig_customers = px.area(
-        summary,
+        summary_f,
         x="month",
         y=["total_customers", "new_customers"],
         title="Clientes Ativos e Novos por Mês",
@@ -151,7 +167,7 @@ with tab_season:
     st.plotly_chart(fig_customers, use_container_width=True)
 
     fig_live = px.line(
-        summary,
+        summary_f,
         x="month",
         y="live_bet_pct",
         title="% Apostas Live por Mês",

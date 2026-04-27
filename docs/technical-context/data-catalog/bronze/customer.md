@@ -11,7 +11,7 @@
 |---|---|---|---|
 | customer_id | TEXT | ID único do cliente | Numérico como texto |
 | customer_datecreation_id | TEXT | Data de cadastro do cliente na plataforma (raw) | — |
-| customer_gender_name | TEXT | Gênero do cliente | Verificar após ingestão |
+| customer_gender_name | TEXT | Gênero do cliente | `Male`, `Female` |
 | customer_birthday | TEXT | Data de nascimento (raw) | — |
 | ingested_at | TIMESTAMP | Momento da ingestão | — |
 

@@ -14,7 +14,7 @@ do resultado e receber um valor parcial.
 | cashout_attempt_bet_id | TEXT | ID da aposta relacionada à tentativa | — |
 | cashout_attempt_bet_cashout_id | TEXT | ID único da tentativa de cash out | — |
 | cashout_attempt_bet_cashout_created | TEXT | Timestamp da tentativa (raw do CSV) | — |
-| cashout_attempt_bet_cashout_status | TEXT | Resultado da tentativa | Verificar valores únicos após ingestão |
+| cashout_attempt_bet_cashout_status | TEXT | Resultado da tentativa | `Successful`, `Unsuccessful` |
 | cashout_attempt_cashout_amount | TEXT | Valor do cash out solicitado (raw) | Numérico como texto |
 | ingested_at | TIMESTAMP | Momento da ingestão no banco | — |
 

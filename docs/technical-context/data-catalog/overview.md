@@ -15,9 +15,9 @@ O catálogo segue a mesma estrutura da arquitetura medalhão:
 
 | Camada | Localização | Conteúdo |
 |---|---|---|
-| Bronze | `bronze/` | Dados brutos dos CSVs, tipos TEXT |
-| Silver | `silver/` | Dados transformados com regras de negócio |
-| Gold | `gold/` | Métricas analíticas para consumo |
+| Bronze | `bronze/` | Dados brutos dos CSVs, tipos TEXT — 5 tabelas documentadas |
+| Silver | `silver/` | Dados transformados com regras de negócio — Star Schema (6 dims + 2 fatos) |
+| Gold | `gold/README.md` | Métricas analíticas para consumo — 6 tabelas documentadas |
 
 ## Protocolo de Atualização
 

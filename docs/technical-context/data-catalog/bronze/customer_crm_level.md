@@ -12,8 +12,8 @@ nível atribuído via forward-fill (aplicado na Silver).
 | Coluna | Tipo | Descrição | Valores possíveis |
 |---|---|---|---|
 | customer_id | TEXT | ID do cliente | Numérico como texto |
-| date_yearmonth | TEXT | Mês de atribuição do nível (raw) | Formato a verificar após ingestão |
-| crm_level | TEXT | Nível CRM atribuído | Verificar valores únicos após ingestão |
+| date_yearmonth | TEXT | Mês de atribuição do nível (raw) | Inteiro YYYYMM — ex: `201809` a `201908` |
+| crm_level | TEXT | Nível CRM atribuído | `Bronze`, `Silver`, `Gold`, `Platinum`, `Diamond` |
 | ingested_at | TIMESTAMP | Momento da ingestão | — |
 
 ## Regras de Negócio

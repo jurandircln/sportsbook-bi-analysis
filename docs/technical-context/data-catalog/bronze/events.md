@@ -10,9 +10,9 @@
 | Coluna | Tipo | Descrição | Valores possíveis |
 |---|---|---|---|
 | event_id | TEXT | ID único do evento | Numérico como texto |
-| event_sport_name | TEXT | Tipo de esporte | Verificar após ingestão (foco: Football) |
-| event_class_name | TEXT | Classe do evento | Verificar após ingestão |
-| event_type_name | TEXT | Tipo de liga | Verificar após ingestão (foco: Romanian Football) |
+| event_sport_name | TEXT | Tipo de esporte | `Soccer` (único valor no dataset) |
+| event_class_name | TEXT | País/região da competição | `England`, `Germany`, `Greece`, `Italy`, `Romania`, `Spain` |
+| event_type_name | TEXT | Nome da liga | `Liga 1`, `Premier League`, `LaLiga`, `Bundesliga`, `Serie A`, `Super League 1` e outras |
 | event_name | TEXT | Nome do evento (ex: Time A vs Time B) | — |
 | event_start_time | TEXT | Horário real de início do evento (raw) | — |
 | event_end_time | TEXT | Horário real de término do evento (raw) | — |

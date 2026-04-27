@@ -12,12 +12,12 @@ e Gross Revenue.
 | Coluna | Tipo | Descrição | Valores possíveis |
 |---|---|---|---|
 | sportbetsettled_bet_id | TEXT | ID único da aposta | — |
-| bettype_name | TEXT | Tipo de aposta | Verificar após ingestão |
-| market_template_name | TEXT | Mercado da aposta (ex: Match Winner, Both Teams to Score) | Verificar após ingestão |
+| bettype_name | TEXT | Tipo de aposta | `Single` (único valor no dataset) |
+| market_template_name | TEXT | Mercado da aposta | 379 valores distintos — principais: `Match Winner`, `Both Teams to Score`, `Total Goals Over/Under`, `Double Chance`, `Correct Score` |
 | sportbetsettled_customer_id | TEXT | ID do cliente que fez a aposta | Referência a bronze.customer |
 | sportbetsettled_settled | TEXT | Timestamp de liquidação da aposta (raw) | — |
 | sportbetsettled_placed | TEXT | Timestamp de colocação da aposta (raw) | — |
-| channel_name | TEXT | Dispositivo/canal usado | Verificar após ingestão (Android, iOS, Web) |
+| channel_name | TEXT | Dispositivo/canal usado | `Android`, `iOS`, `Mobile`, `Internet` |
 | sportbetsettled_event_id | TEXT | ID do evento apostado | Referência a bronze.events |
 | turnover | TEXT | Valor apostado em moeda local (raw) | Numérico como texto |
 | winnings | TEXT | Ganhos do cliente em moeda local (raw) | Numérico como texto |
